@@ -1,7 +1,6 @@
 import axios from "axios";
-import * as cheerio from "cheerio";
 
-const BASE_URL = "https://zenn.dev";
+const API_URL = "https://zenn.dev/api";
 
 export type Article = {
   title: string;
@@ -14,42 +13,23 @@ export type Article = {
 type ZennArticle = {
   title: string;
   path: string;
-  likedCount: number;
+  liked_count: number;
   emoji: string;
   user: { username: string };
 };
 
-type ZennNextData = {
-  props: {
-    pageProps: {
-      articles: ZennArticle[];
-    };
-  };
+type ZennResponse = {
+  articles: ZennArticle[];
 };
 
 export const zennFetch = async (username: string): Promise<Article[]> => {
   const response = await axios
-    .get(`${BASE_URL}/articles?username=${username}&order=latest`)
+    .get<ZennResponse>(`${API_URL}/articles?username=${username}&order=latest`)
     .catch((error) => {
       throw new Error(`記事の取得に失敗しました (${error.message})`);
     });
 
-  const document = cheerio.load(response.data);
-  const jsonText = document("#__NEXT_DATA__").text();
-  if (!jsonText) {
-    throw new Error(
-      "__NEXT_DATA__ が見つかりません。Zennの仕様が変わった可能性があります",
-    );
-  }
-
-  let nextData: ZennNextData;
-  try {
-    nextData = JSON.parse(jsonText) as ZennNextData;
-  } catch {
-    throw new Error("__NEXT_DATA__ のJSONパースに失敗しました");
-  }
-
-  const articles = nextData.props?.pageProps?.articles;
+  const articles = response.data.articles;
   if (!Array.isArray(articles)) {
     throw new Error("記事データの構造が想定と異なります");
   }
@@ -57,7 +37,7 @@ export const zennFetch = async (username: string): Promise<Article[]> => {
   return articles.map((article) => ({
     title: article.title,
     url: `https://zenn.dev${article.path}`,
-    likes: article.likedCount,
+    likes: article.liked_count,
     emoji: article.emoji,
     author: article.user.username,
   }));

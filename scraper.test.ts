@@ -6,20 +6,13 @@ vi.mock("axios");
 
 const mockGet = vi.mocked(axios.get);
 
-const createHtml = (nextData?: object) =>
-  nextData
-    ? `<html><script id="__NEXT_DATA__" type="application/json">${JSON.stringify(nextData)}</script></html>`
-    : "<html></html>";
-
-const fakePageData = {
-  props: { pageProps: { articles: [{
-    title: "テスト記事",
-    path: "/test/articles/1",
-    likedCount: 42,
-    emoji: "🎉",
-    user: { username: "testuser" },
-  }] } },
-};
+const fakeArticles = [{
+  title: "テスト記事",
+  path: "/test/articles/1",
+  liked_count: 42,
+  emoji: "🎉",
+  user: { username: "testuser" },
+}];
 
 describe("zennFetch", () => {
   beforeEach(() => {
@@ -28,7 +21,7 @@ describe("zennFetch", () => {
 
   describe("正常系", () => {
     it("記事を正しくパースできる", async () => {
-      mockGet.mockResolvedValue({ data: createHtml(fakePageData) });
+      mockGet.mockResolvedValue({ data: { articles: fakeArticles } });
 
       const [article] = await zennFetch("testuser");
 
@@ -42,9 +35,7 @@ describe("zennFetch", () => {
     });
 
     it("記事が0件の場合、空配列を返す", async () => {
-      mockGet.mockResolvedValue({
-        data: createHtml({ props: { pageProps: { articles: [] } } }),
-      });
+      mockGet.mockResolvedValue({ data: { articles: [] } });
 
       const articles = await zennFetch("testuser");
       expect(articles).toStrictEqual([]);
@@ -52,9 +43,9 @@ describe("zennFetch", () => {
   });
 
   describe("異常系", () => {
-    it("__NEXT_DATA__ がない場合エラーになる", async () => {
-      mockGet.mockResolvedValue({ data: createHtml() });
-      await expect(zennFetch("testuser")).rejects.toThrow("__NEXT_DATA__ が見つかりません");
+    it("記事データの構造が想定と異なる場合エラーになる", async () => {
+      mockGet.mockResolvedValue({ data: {} });
+      await expect(zennFetch("testuser")).rejects.toThrow("記事データの構造が想定と異なります");
     });
 
     it("ネットワークエラー時にエラーになる", async () => {
