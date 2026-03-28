@@ -54,6 +54,19 @@
 - "type": "module" を package.json に追加するとトップレベル await が使える
 - ただし ts-node は ESM モードで .ts を扱えない → tsx に置き換えるのが簡単
 
+### 依存パッケージの見直し
+- Node.js 18以降は fetch が標準で使えるので、axiosは不要
+- APIを直接叩くなら cheerio（HTMLパーサー）も不要
+- 結果として dependencies がゼロになり、プロジェクトがシンプルになった
+
+### fetch と axios の違い
+- fetch はエラー時に例外を投げず、response.ok / response.status で判定する
+- axios は 4xx/5xx で自動的に例外を投げる
+
+### テストでの fetch モック
+- vi.stubGlobal("fetch", mockFn) でグローバルの fetch をモックできる
+- axios の vi.mock("axios") よりも、レスポンスオブジェクト（ok, status, json()）を自分で組む必要がある
+
 ### package.json
 - "main": "index.js" は実態と合っていなければ削除・修正すべき
 - scripts に start / test を定義しておくと実行が楽になる
