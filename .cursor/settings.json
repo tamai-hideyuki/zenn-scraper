@@ -1,0 +1,14 @@
+{
+  "vim.normalModeKeyBindings": [
+    { "before": ["<up>"], "after": [] },
+    { "before": ["<down>"], "after": [] },
+    { "before": ["<left>"], "after": [] },
+    { "before": ["<right>"], "after": [] }
+  ],
+  "vim.insertModeKeyBindings": [
+    { "before": ["<up>"], "after": [] },
+    { "before": ["<down>"], "after": [] },
+    { "before": ["<left>"], "after": [] },
+    { "before": ["<right>"], "after": [] }
+  ]
+}
