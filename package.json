@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "ts-node main.ts",
+    "start": "tsx main.ts",
     "test": "vitest"
   },
   "keywords": [],
@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "vitest": "^4.1.2"
   }
