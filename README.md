@@ -40,7 +40,20 @@
 - rejects.toThrow("メッセージ") でエラーメッセージも検証できる
 - テストデータ生成はヘルパー関数 (createHtml) にまとめると簡潔になる
 
+### Zenn スクレイピングの知見
+- https://zenn.dev/articles?username=xxx（HTMLページ）は username パラメータを無視して全体の最新記事を返す
+- https://zenn.dev/api/articles?username=xxx（API）を使えば正しくユーザーの記事が返る
+- APIのフィールド名はスネークケース（liked_count）、HTMLの __NEXT_DATA__ 内はキャメルケース（likedCount）だった
+
+### 設計判断
+- 公開APIがあるなら、HTMLパースよりAPIを使う方がシンプルで壊れにくい
+- APIに切り替えたことで cheerio が不要になり、依存パッケージが削減できた
+- スクレイピングは実際のレスポンスを確認してから実装すべき（username パラメータが効いていなかった）
+
+### ESM 関連
+- "type": "module" を package.json に追加するとトップレベル await が使える
+- ただし ts-node は ESM モードで .ts を扱えない → tsx に置き換えるのが簡単
+
 ### package.json
-- "type": "module" でトップレベル await が使える
 - "main": "index.js" は実態と合っていなければ削除・修正すべき
 - scripts に start / test を定義しておくと実行が楽になる
