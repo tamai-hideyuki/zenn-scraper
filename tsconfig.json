@@ -3,8 +3,8 @@
     "module": "nodenext",
     "target": "esnext",
     "types": ["node"],
-
-    "sourceMap": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
 
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
