@@ -1,5 +1,3 @@
-import axios from "axios";
-
 const API_URL = "https://zenn.dev/api";
 
 export type Article = {
@@ -23,13 +21,15 @@ type ZennResponse = {
 };
 
 export const zennFetch = async (username: string): Promise<Article[]> => {
-  const response = await axios
-    .get<ZennResponse>(`${API_URL}/articles?username=${username}&order=latest`)
-    .catch((error) => {
-      throw new Error(`記事の取得に失敗しました (${error.message})`);
-    });
+  const response = await fetch(
+    `${API_URL}/articles?username=${username}&order=latest`,
+  );
+  if (!response.ok) {
+    throw new Error(`記事の取得に失敗しました (${response.status})`);
+  }
 
-  const articles = response.data.articles;
+  const data = (await response.json()) as ZennResponse;
+  const articles = data.articles;
   if (!Array.isArray(articles)) {
     throw new Error("記事データの構造が想定と異なります");
   }
