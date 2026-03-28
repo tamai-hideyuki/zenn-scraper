@@ -12,7 +12,7 @@ type Article = {
     author: string;
 };
 
-const zennFetch = async (username: string): Promise<Article[]> => {
+export const zennFetch = async (username: string): Promise<Article[]> => {
   const response = await axios.get(`${BASE_URL}/articles?username=${username}&order=latest`);
   const $ = cheerio.load(response.data);
   const jsonText = $("#__NEXT_DATA__").text();
