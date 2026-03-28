@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 
+
 const BASE_URL = "https://zenn.dev";
 
 type Article = {
@@ -12,15 +13,17 @@ type Article = {
 };
 
 const zennFetch = async (username: string): Promise<Article[]> => {
-    const response = await axios.get( `${BASE_URL}/${username}`);
-    const $ = cheerio.load(response.data);
-    const articles: Article[] = [];
-
-    $(".ArticleList_title__").each((_, element) => {
-        const title = $(element).text().trim();
-        const url = $(element).closest("a").attr("href") ?? "";
-        articles.push({ title, url, likes: 0 });
-    });
+  const response = await axios.get(`${BASE_URL}/articles?username=${username}&order=latest`);
+  const $ = cheerio.load(response.data);
+  const jsonText = $("#__NEXT_DATA__").text();
+  const json = JSON.parse(jsonText);
+  const articles: Article[] = json.props.pageProps.articles.map((a: any) => ({
+    title: a.title,
+    url: `https://zenn.dev${a.path}`,
+    likes: a.likedCount,
+    emoji: a.emoji,
+    author: a.user.username,
+}));
 
     return articles;
 }
